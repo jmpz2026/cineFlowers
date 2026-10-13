@@ -40,6 +40,21 @@ let ultimoEscape = 0;
 
 musica.volume = VOLUMEN;
 
+const IMAGENES = PASOS.map(function (p) { return p.imagen; });
+
+function precargar(lista) {
+  if (!lista.length) return;
+
+  const img = new Image();
+  img.onload = img.onerror = function () { precargar(lista.slice(1)); };
+  img.src = lista[0];
+}
+
+/* primero la música, después las fotos en orden de aparición */
+musica.preload = 'auto';
+musica.load();
+precargar(IMAGENES);
+
 function musicaPrender() {
   if (sonando) return;
 
