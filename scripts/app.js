@@ -21,7 +21,6 @@ const PASOS = [
 ];
 
 const VOLUMEN = 0.5;
-const FADE = 6000;
 
 const tarjeta = document.getElementById('tarjeta');
 const foto = document.querySelector('.foto');
@@ -36,32 +35,17 @@ const musica = document.getElementById('musica');
 let paso = 0;
 let esquives = 0;
 let avisando = false;
-let subida = null;
 
-musica.volume = 0;
-
-function subirVolumen() {
-  clearInterval(subida);
-
-  const desde = musica.volume;
-  const arranque = Date.now();
-
-  subida = setInterval(function () {
-    const avance = Math.min(1, (Date.now() - arranque) / FADE);
-    musica.volume = Math.min(1, desde + (VOLUMEN - desde) * avance * avance);
-    if (avance >= 1) clearInterval(subida);
-  }, 80);
-}
+musica.volume = VOLUMEN;
 
 function musicaPrender() {
   if (!musica.paused) return;
-
-  const intento = musica.play();
-  if (intento && intento.then) intento.then(subirVolumen).catch(function () {});
+  musica.play().catch(function () {});
 }
 
 musicaPrender();
 document.addEventListener('pointerdown', musicaPrender, { once: true });
+document.addEventListener('touchstart', musicaPrender, { once: true });
 document.addEventListener('keydown', musicaPrender, { once: true });
 
 function mostrar(contenido) {

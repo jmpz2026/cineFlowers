@@ -11,6 +11,7 @@ html, body { height: 100%; }
 
 body {
   margin: 0;
+  min-height: 100vh;
   min-height: 100dvh;
   display: grid;
   place-items: center;
@@ -56,6 +57,7 @@ body {
 
 .foto {
   width: 184px;
+  height: 184px;
   aspect-ratio: 1 / 1;
   display: grid;
   place-items: center;
