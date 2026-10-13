@@ -35,18 +35,29 @@ const musica = document.getElementById('musica');
 let paso = 0;
 let esquives = 0;
 let avisando = false;
+let sonando = false;
+let ultimoEscape = 0;
 
 musica.volume = VOLUMEN;
 
 function musicaPrender() {
-  if (!musica.paused) return;
-  musica.play().catch(function () {});
+  if (sonando) return;
+
+  const intento = musica.play();
+  if (intento && intento.then) {
+    intento.then(function () { sonando = true; }).catch(function () {});
+  }
 }
 
+musica.addEventListener('pause', function () { sonando = false; });
+
+/* Android solo da gesto de usuario en click, touchend y pointerup */
+['pointerdown', 'mousedown', 'touchstart', 'touchend', 'pointerup', 'click', 'keydown']
+  .forEach(function (tipo) {
+    document.addEventListener(tipo, musicaPrender, true);
+  });
+
 musicaPrender();
-document.addEventListener('pointerdown', musicaPrender, { once: true });
-document.addEventListener('touchstart', musicaPrender, { once: true });
-document.addEventListener('keydown', musicaPrender, { once: true });
 
 function mostrar(contenido) {
   foto.dataset.emoji = contenido.emoji;
@@ -84,8 +95,10 @@ btnSi.addEventListener('click', function () {
   mostrar(PASOS[paso]);
 });
 
-function escapar(e) {
-  if (e) e.preventDefault();
+function escapar() {
+  const ahora = Date.now();
+  if (ahora - ultimoEscape < 250) return;
+  ultimoEscape = ahora;
 
   const margen = 12;
   const maxX = Math.max(margen, tarjeta.clientWidth - btnNo.offsetWidth - margen);
@@ -125,7 +138,7 @@ function escapar(e) {
 
 btnNo.addEventListener('mouseenter', escapar);
 btnNo.addEventListener('pointerdown', escapar);
-btnNo.addEventListener('touchstart', escapar, { passive: false });
+btnNo.addEventListener('touchstart', escapar);
 btnNo.addEventListener('focus', escapar);
 btnNo.addEventListener('click', escapar);
 
